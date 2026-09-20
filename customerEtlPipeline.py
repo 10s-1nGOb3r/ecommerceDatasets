@@ -156,7 +156,6 @@ salesByCustomerId = df.groupby(["year_date","month_date","customer_id"]).agg(
     totalSalesPerCustomer = ("salesInUsd","sum"),
     averageMarginProfitsPerCustomer = ("profit_margin_percentageFiltered","mean")
 ).reset_index()
-salesByCustomerId["averageMarginProfitsPerCustomer"] = salesByCustomerId["averageMarginProfitsPerCustomer"].round(2)
 
 salesAndProfitsByCustomerSegment = df.groupby(["year_date","month_date","customer_segment"]).agg(
     totalPurchasingActivityPerCustomerSegment = ("customer_id","count"),
@@ -164,7 +163,6 @@ salesAndProfitsByCustomerSegment = df.groupby(["year_date","month_date","custome
     totalSalesPerCustomerSegment = ("salesInUsd","sum"),
     averageMarginProfitsPerCustomerSegment = ("profit_margin_percentageFiltered","mean")
 ).reset_index()
-salesAndProfitsByCustomerSegment["averageMarginProfitsPerCustomerSegment"] = salesAndProfitsByCustomerSegment["averageMarginProfitsPerCustomerSegment"].round(2)
 
 salesAndProfitsByCustomerCountry = df.groupby(["year_date","month_date","customer_country"]).agg(
     totalPurchasingActivityPerCustomerCountry = ("customer_id","count"),
@@ -172,7 +170,6 @@ salesAndProfitsByCustomerCountry = df.groupby(["year_date","month_date","custome
     totalSalesPerCustomerCountry = ("salesInUsd","sum"),
     averageMarginProfitsPerCustomerCountry = ("profit_margin_percentageFiltered","mean")
 ).reset_index()
-salesAndProfitsByCustomerCountry["averageMarginProfitsPerCustomerCountry"] = salesAndProfitsByCustomerCountry["averageMarginProfitsPerCustomerCountry"].round(2)
 
 salesAndProfitsByCountryRegion = df.groupby(["year_date","month_date","countryRegion"]).agg(
     totalPurchasingActivityPerCountryRegion = ("customer_id","count"),
@@ -180,7 +177,19 @@ salesAndProfitsByCountryRegion = df.groupby(["year_date","month_date","countryRe
     totalSalesPerCountryRegion = ("salesInUsd","sum"),
     averageMarginProfitsPerCountryRegion = ("profit_margin_percentageFiltered","mean")
 ).reset_index()
-salesAndProfitsByCountryRegion["averageMarginProfitsPerCountryRegion"] = salesAndProfitsByCountryRegion["averageMarginProfitsPerCountryRegion"].round(2)
+
+collection5 = [salesByCustomerId,
+               salesAndProfitsByCustomerSegment,
+               salesAndProfitsByCustomerCountry,
+               salesAndProfitsByCountryRegion]
+collection6 = ["averageMarginProfitsPerCustomer",
+               "averageMarginProfitsPerCustomerSegment",
+               "averageMarginProfitsPerCustomerCountry",
+               "averageMarginProfitsPerCountryRegion"]
+for field5 in collection5:
+    for field6 in collection6:
+        if field6 in field5.columns:
+            field5[field6] = field5[field6].round(2)
 
 df.info()
 
