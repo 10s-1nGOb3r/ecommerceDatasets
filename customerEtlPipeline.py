@@ -85,6 +85,10 @@ choices3 = [1,df["toUSDExchange"],0,0]
 df["toUSDExchange"] = np.select(conditions3,choices3,default=0)
 df["profitInUsd"] = np.where((df["toUSDExchange"] > 0) & (df["profit"] > 0),(df["profit"] * df["toUSDExchange"]).round(2),0)
 df["salesInUsd"] = np.where(df["toUSDExchange"] > 0,(df["gross_sales"] * df["toUSDExchange"]).round(2),0)
+df["profit_margin_percentageFiltered"] = np.where(df["toUSDExchange"] > 0,(df["profit_margin_percentage"]).round(2),0)
+collection9 = ["profitInUsd","salesInUsd"]
+for field9 in collection9:
+    df[field9] = df[field9].round(0).astype(int)
 
 conditions = [(df2["customer_age"] >= 18) & (df2["customer_age"] <= 24),
               (df2["customer_age"] >= 25) & (df2["customer_age"] <= 34),
@@ -149,38 +153,34 @@ for field3 in collection3:
 salesByCustomerId = df.groupby(["year_date","month_date","customer_id"]).agg(
     totalPurchasingActivityPerCustomer = ("customer_id","count"),
     totalProfitsMakingPerCustomer = ("profitInUsd","sum"),
-    totalSalesPerCustomer = ("salesInUsd","sum")
+    totalSalesPerCustomer = ("salesInUsd","sum"),
+    averageMarginProfitsPerCustomer = ("profit_margin_percentageFiltered","mean")
 ).reset_index()
-collection5 = ["totalProfitsMakingPerCustomer","totalSalesPerCustomer"]
-for field5 in collection5:
-    salesByCustomerId[field5] = salesByCustomerId[field5].round(2)
+salesByCustomerId["averageMarginProfitsPerCustomer"] = salesByCustomerId["averageMarginProfitsPerCustomer"].round(2)
 
 salesAndProfitsByCustomerSegment = df.groupby(["year_date","month_date","customer_segment"]).agg(
-    totalPurchasingActivityPerCustomer = ("customer_id","count"),
-    totalProfitsMakingPerCustomer = ("profitInUsd","sum"),
-    totalSalesPerCustomer = ("salesInUsd","sum")
+    totalPurchasingActivityPerCustomerSegment = ("customer_id","count"),
+    totalProfitsMakingPerCustomerSegment = ("profitInUsd","sum"),
+    totalSalesPerCustomerSegment = ("salesInUsd","sum"),
+    averageMarginProfitsPerCustomerSegment = ("profit_margin_percentageFiltered","mean")
 ).reset_index()
-collection6 = ["totalProfitsMakingPerCustomer","totalSalesPerCustomer"]
-for field6 in collection6:
-    salesAndProfitsByCustomerSegment[field5] = salesAndProfitsByCustomerSegment[field5].round(2)
+salesAndProfitsByCustomerSegment["averageMarginProfitsPerCustomerSegment"] = salesAndProfitsByCustomerSegment["averageMarginProfitsPerCustomerSegment"].round(2)
 
 salesAndProfitsByCustomerCountry = df.groupby(["year_date","month_date","customer_country"]).agg(
-    totalPurchasingActivityPerCustomer = ("customer_id","count"),
-    totalProfitsMakingPerCustomer = ("profitInUsd","sum"),
-    totalSalesPerCustomer = ("salesInUsd","sum")
+    totalPurchasingActivityPerCustomerCountry = ("customer_id","count"),
+    totalProfitsMakingPerCustomerCountry = ("profitInUsd","sum"),
+    totalSalesPerCustomerCountry = ("salesInUsd","sum"),
+    averageMarginProfitsPerCustomerCountry = ("profit_margin_percentageFiltered","mean")
 ).reset_index()
-collection7 = ["totalProfitsMakingPerCustomer","totalSalesPerCustomer"]
-for field7 in collection7:
-    salesAndProfitsByCustomerCountry[field5] = salesAndProfitsByCustomerCountry[field5].round(2)
+salesAndProfitsByCustomerCountry["averageMarginProfitsPerCustomerCountry"] = salesAndProfitsByCustomerCountry["averageMarginProfitsPerCustomerCountry"].round(2)
 
-salesAndProfitsByCountryRegion = df.groupby([]).agg(
-    totalPurchasingActivityPerCustomer = ("customer_id","count"),
-    totalProfitsMakingPerCustomer = ("profitInUsd","sum"),
-    totalSalesPerCustomer = ("salesInUsd","sum")
+salesAndProfitsByCountryRegion = df.groupby(["year_date","month_date","countryRegion"]).agg(
+    totalPurchasingActivityPerCountryRegion = ("customer_id","count"),
+    totalProfitsMakingPerCountryRegion = ("profitInUsd","sum"),
+    totalSalesPerCountryRegion = ("salesInUsd","sum"),
+    averageMarginProfitsPerCountryRegion = ("profit_margin_percentageFiltered","mean")
 ).reset_index()
-collection8 = ["totalProfitsMakingPerCustomer","totalSalesPerCustomer"]
-for field8 in collection8:
-    salesAndProfitsByCountryRegion[field8] = salesAndProfitsByCountryRegion[field8].round(2)
+salesAndProfitsByCountryRegion["averageMarginProfitsPerCountryRegion"] = salesAndProfitsByCountryRegion["averageMarginProfitsPerCountryRegion"].round(2)
 
 df.info()
 
