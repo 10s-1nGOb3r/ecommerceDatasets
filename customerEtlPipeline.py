@@ -19,6 +19,8 @@ save_at8 = os.path.join(script_dir,"output","aggregationCustomerByAgeGroup.csv")
 save_at9 = os.path.join(script_dir,"output","aggregationSalesChannelByGender.csv")
 save_at10 = os.path.join(script_dir,"output","aggregationProfitsAndSalesActivityPerCustomer.csv")
 save_at11 = os.path.join(script_dir,"output","aggregationProfitsAndSalesPerCustomerSegment.csv")
+save_at12 = os.path.join(script_dir,"output","aggregationProfitsAndSalesPerCustomerCountry.csv")
+save_at13 = os.path.join(script_dir,"output","aggregationProfitsAndSalesPerCountryRegion.csv")
 
 df = pd.read_csv(file_path,sep=",")
 df2 = pd.read_csv(file_path2,sep=",")
@@ -46,6 +48,7 @@ collection4 = ["month_date","year_date"]
 for field4 in collection4:
     df[field4] = df[field4].astype(str)
 df["keysToDf5"] = df["month_date"] + "." + df["year_date"] + "." + df["currency"]
+df["countryRegion"] = df["customer_country"] + " " + df["region"]
 
 #Keep this in your mind!
 #profit = net_sales - product_cost - shipping_cost
@@ -154,12 +157,30 @@ for field5 in collection5:
 
 salesAndProfitsByCustomerSegment = df.groupby(["year_date","month_date","customer_segment"]).agg(
     totalPurchasingActivityPerCustomer = ("customer_id","count"),
-        totalProfitsMakingPerCustomer = ("profitInUsd","sum"),
-        totalSalesPerCustomer = ("salesInUsd","sum")
+    totalProfitsMakingPerCustomer = ("profitInUsd","sum"),
+    totalSalesPerCustomer = ("salesInUsd","sum")
 ).reset_index()
 collection6 = ["totalProfitsMakingPerCustomer","totalSalesPerCustomer"]
 for field6 in collection6:
     salesAndProfitsByCustomerSegment[field5] = salesAndProfitsByCustomerSegment[field5].round(2)
+
+salesAndProfitsByCustomerCountry = df.groupby(["year_date","month_date","customer_country"]).agg(
+    totalPurchasingActivityPerCustomer = ("customer_id","count"),
+    totalProfitsMakingPerCustomer = ("profitInUsd","sum"),
+    totalSalesPerCustomer = ("salesInUsd","sum")
+).reset_index()
+collection7 = ["totalProfitsMakingPerCustomer","totalSalesPerCustomer"]
+for field7 in collection7:
+    salesAndProfitsByCustomerCountry[field5] = salesAndProfitsByCustomerCountry[field5].round(2)
+
+salesAndProfitsByCountryRegion = df.groupby([]).agg(
+    totalPurchasingActivityPerCustomer = ("customer_id","count"),
+    totalProfitsMakingPerCustomer = ("profitInUsd","sum"),
+    totalSalesPerCustomer = ("salesInUsd","sum")
+).reset_index()
+collection8 = ["totalProfitsMakingPerCustomer","totalSalesPerCustomer"]
+for field8 in collection8:
+    salesAndProfitsByCountryRegion[field8] = salesAndProfitsByCountryRegion[field8].round(2)
 
 df.info()
 
@@ -175,3 +196,5 @@ customerPerAgeGroup.to_csv(save_at8,sep=";",index=False)
 salesChannelByGender.to_csv(save_at9,sep=";",index=False)
 salesByCustomerId.to_csv(save_at10,sep=";",index=False)
 salesAndProfitsByCustomerSegment.to_csv(save_at11,sep=";",index=False)
+salesAndProfitsByCustomerCountry.to_csv(save_at12,sep=";",index=False)
+salesAndProfitsByCountryRegion.to_csv(save_at13,sep=";",index=False)
