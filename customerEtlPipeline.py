@@ -191,6 +191,19 @@ for field5 in collection5:
         if field6 in field5.columns:
             field5[field6] = field5[field6].round(2)
 
+collection7 = [salesByCustomerId,
+               salesAndProfitsByCustomerSegment,
+               salesAndProfitsByCustomerCountry,
+               salesAndProfitsByCountryRegion]
+collection8 = {"averageMarginProfitsPerCustomer": "averageMarginProfitsPerCustomerForPbi",
+               "averageMarginProfitsPerCustomerSegment": "averageMarginProfitsPerCustomerSegmentForPbi",
+               "averageMarginProfitsPerCustomerCountry": "averageMarginProfitsPerCustomerCountryForPbi",
+               "averageMarginProfitsPerCountryRegion": "averageMarginProfitsPerCountryRegionForPbi"}
+for field7 in collection7:
+    for field8, field9 in collection8.items():
+        if field8 in field7.columns:
+            field7[field9] = field7[field8].round(2).astype(str).str.replace(".", ",", regex=False)
+
 df.info()
 
 df.to_csv(save_at,sep=";",index=False)
